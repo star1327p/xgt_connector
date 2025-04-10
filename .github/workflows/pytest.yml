@@ -97,7 +97,7 @@ jobs:
             -e MYSQL_DATABASE=test -d mariadb:latest
 
     - name: Launch xGT
-      run: "docker run --rm -d --name xgt -p 4367:4367 trovares/xgt"
+      run: "docker run --rm -d --name xgt -p 4367:4367 rocketgraph/xgt"
 
     - name: Show docker containers
       run: "docker ps -a"

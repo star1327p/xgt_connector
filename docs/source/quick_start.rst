@@ -25,12 +25,12 @@ Quick Start
 Installing
 ----------
 
-In a seperate terminal install the `Developer version of xGT with Docker <https://hub.docker.com/r/trovares/xgt>`_ and run it:
+In a seperate terminal install the `Developer version of xGT with Docker <https://hub.docker.com/r/rocketgraph/xgt>`_ and run it:
 
 .. code-block:: bash
 
-   docker pull trovares/xgt
-   docker run --publish=4367:4367 trovares/xgt
+   docker pull rocketgraph/xgt
+   docker run --publish=4367:4367 rocketgraph/xgt
 
 In another terminal install the connector:
 

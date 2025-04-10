@@ -51,8 +51,8 @@ python -m pip install 'xgt_connector[odbc]'
 If you don't have Rocketgraph xGT, you can install and run the [Developer version](https://hub.docker.com/r/trovares/xgt) from Docker:
 
 ```bash
-docker pull trovares/xgt
-docker run --publish=4367:4367 trovares/xgt
+docker pull rocketgraph/xgt
+docker run --publish=4367:4367 rocketgraph/xgt
 ```
 ## Using the xgt_connector
 

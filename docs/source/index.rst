@@ -50,12 +50,12 @@ You can install this python package by executing this command:
 
    python -m pip install xgt_connector
 
-If you don't have Rocketgraph xGT, it is available through the AWS Marketplace or you can use the `Developer version of xGT with Docker <https://hub.docker.com/r/trovares/xgt>`_:
+If you don't have Rocketgraph xGT, it is available through the AWS Marketplace or you can use the `Developer version of xGT with Docker <https://hub.docker.com/r/rocketgraph/xgt>`_:
 
 .. code-block:: bash
 
-   docker pull trovares/xgt
-   docker run --publish=4367:4367 trovares/xgt
+   docker pull rocketgraph/xgt
+   docker run --publish=4367:4367 rocketgraph/xgt
 
 For requirements and optional components see :ref:`requirements`.
 

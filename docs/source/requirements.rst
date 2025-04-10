@@ -33,12 +33,12 @@ The Python packages can be installed through pip:
 
    python -m pip install xgt neo4j pyarrow
 
-If you don't have Rocketgraph xGT, you can install and run the `Developer version <https://hub.docker.com/r/trovares/xgt>`_ from Docker:
+If you don't have Rocketgraph xGT, you can install and run the `Developer version <https://hub.docker.com/r/rocketgraph/xgt>`_ from Docker:
 
 .. code-block:: bash
 
-   docker pull trovares/xgt
-   docker run --publish=4367:4367 trovares/xgt
+   docker pull rocketgraph/xgt
+   docker run --publish=4367:4367 rocketgraph/xgt
 
 Optional
 --------
