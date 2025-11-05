@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*- --------------------------------------------------===#
 #
-#  Copyright 2022-2024 Trovares Inc.
+#  Copyright 2022-2025 Trovares Inc.
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 #
 #===----------------------------------------------------------------------===#
 
+import arrow_odbc
 import struct
 import sys
 import xgt
@@ -854,32 +855,41 @@ class ODBCConnector(object):
     def __copy_data(self, query_for_extract, frame, schema, progress_bar, batch_size,
                     transaction_size, max_text_size, max_binary_size, column_mapping,
                     suppress_errors, row_filter, on_duplicate_keys):
-        reader = read_arrow_batches_from_odbc(
-            query=query_for_extract,
-            connection_string=self._driver._connection_string,
-            batch_size=batch_size,
-            max_text_size=max_text_size,
-            max_binary_size=max_binary_size,
-        )
-        count = 0
-        writer, metadata = self.__arrow_writer(frame, schema, column_mapping, suppress_errors, row_filter, on_duplicate_keys)
-        for batch in reader:
-            # Process arrow batches
-            writer.write(batch)
-            progress_bar.show_progress(batch.num_rows)
-            count += batch.num_rows
-            # Start a new transaction
-            if transaction_size > 0 and count >= transaction_size:
-                count = 0
-                if (suppress_errors):
-                    self.__check_for_error(frame, schema, writer, metadata)
-                writer.close()
-                writer, metadata = self.__arrow_writer(frame, schema, column_mapping, suppress_errors, row_filter, on_duplicate_keys)
+        try:
+            reader = read_arrow_batches_from_odbc(
+                query=query_for_extract,
+                connection_string=self._driver._connection_string,
+                batch_size=batch_size,
+                max_text_size=max_text_size,
+                max_binary_size=max_binary_size,
+            )
+            count = 0
+            writer, metadata = self.__arrow_writer(frame, schema, column_mapping, suppress_errors, row_filter, on_duplicate_keys)
+            for batch in reader:
+                # Process arrow batches
+                writer.write(batch)
+                progress_bar.show_progress(batch.num_rows)
+                count += batch.num_rows
+                # Start a new transaction
+                if transaction_size > 0 and count >= transaction_size:
+                    count = 0
+                    if (suppress_errors):
+                        self.__check_for_error(frame, schema, writer, metadata)
+                    writer.close()
+                    writer, metadata = self.__arrow_writer(frame, schema, column_mapping, suppress_errors, row_filter, on_duplicate_keys)
 
-        if (suppress_errors):
-          self.__check_for_error(frame, schema, writer, metadata)
+            if (suppress_errors):
+                self.__check_for_error(frame, schema, writer, metadata)
 
-        writer.close()
+            writer.close()
+        except arrow_odbc.error.Error as e:
+            if "too large to be written" in str(e):
+                raise RuntimeError(
+                    f"{e}\nHint: Try building the query yourself with transfer_query_to_xgt and casting oversized columns with CAST(column AS VARCHAR(n)) "
+                    "or changing the schema of the table to use a fixed size VARCHAR(n). "
+                    "Variable text width columns sometimes report incorrect maximum sizes from drivers. "
+                ) from e
+            raise
 
     def __check_for_error(self, frame, schema, writer, metadata):
         # Write an empty batch with metadata to indicate we are done.
@@ -1003,63 +1013,72 @@ class ODBCConnector(object):
     def __copy_query_data_to_xgt(self, query, mapping, append, force, easy_edges,
                                  batch_size, transaction_size, max_text_size, max_binary_size,
                                  column_mapping, suppress_errors, row_filter, on_duplicate_keys):
-        estimate = 0
-        mapping_vertices = { }
-        mapping_edges = { }
-        mapping_tables = { }
-        result = {'vertices' : dict(), 'edges' : dict(), 'tables' : dict()}
-        self.__get_mapping(mapping, mapping_tables, mapping_vertices, mapping_edges)
+        try:
+            estimate = 0
+            mapping_vertices = { }
+            mapping_edges = { }
+            mapping_tables = { }
+            result = {'vertices' : dict(), 'edges' : dict(), 'tables' : dict()}
+            self.__get_mapping(mapping, mapping_tables, mapping_vertices, mapping_edges)
 
-        with ProgressDisplay(estimate) as progress_bar:
-            reader = read_arrow_batches_from_odbc(
-                query=query,
-                connection_string=self._driver._connection_string,
-                batch_size=batch_size,
-                max_text_size=max_text_size,
-                max_binary_size=max_binary_size,
-            )
-            arrow_schema = reader.schema
-            xgt_schema = _infer_xgt_schema_from_pyarrow_schema(arrow_schema, self._driver._conversions())
-            for table in mapping_tables:
-                schema = {'xgt_schema' : xgt_schema, 'arrow_schema' : arrow_schema, 'mapping' : mapping_tables[table]}
-                result['tables'][table] = schema
-                frame = schema['mapping']['frame']
+            with ProgressDisplay(estimate) as progress_bar:
+                reader = read_arrow_batches_from_odbc(
+                    query=query,
+                    connection_string=self._driver._connection_string,
+                    batch_size=batch_size,
+                    max_text_size=max_text_size,
+                    max_binary_size=max_binary_size,
+                )
+                arrow_schema = reader.schema
+                xgt_schema = _infer_xgt_schema_from_pyarrow_schema(arrow_schema, self._driver._conversions())
+                for table in mapping_tables:
+                    schema = {'xgt_schema' : xgt_schema, 'arrow_schema' : arrow_schema, 'mapping' : mapping_tables[table]}
+                    result['tables'][table] = schema
+                    frame = schema['mapping']['frame']
 
-            for table in mapping_vertices:
-                schema = {'xgt_schema' : xgt_schema, 'arrow_schema' : arrow_schema, 'mapping' : mapping_vertices[table]}
-                result['vertices'][table] = schema
-                frame = schema['mapping']['frame']
+                for table in mapping_vertices:
+                    schema = {'xgt_schema' : xgt_schema, 'arrow_schema' : arrow_schema, 'mapping' : mapping_vertices[table]}
+                    result['vertices'][table] = schema
+                    frame = schema['mapping']['frame']
 
-            for table in mapping_edges:
-                schema = {'xgt_schema' : xgt_schema, 'arrow_schema' : arrow_schema, 'mapping' : mapping_edges[table]}
-                result['edges'][table] = schema
-                frame = schema['mapping']['frame']
+                for table in mapping_edges:
+                    schema = {'xgt_schema' : xgt_schema, 'arrow_schema' : arrow_schema, 'mapping' : mapping_edges[table]}
+                    result['edges'][table] = schema
+                    frame = schema['mapping']['frame']
 
-            self.create_xgt_schemas(result, append, force, easy_edges)
-            writer, metadata = self.__arrow_writer(frame, arrow_schema, column_mapping, suppress_errors, row_filter, on_duplicate_keys)
-            count = 0
-            bytes_transferred = 0
-            row_count = 0
-            for batch in reader:
-                bytes_transferred += sum(column.nbytes for column in batch)
-                # Process arrow batches
-                writer.write(batch)
-                progress_bar.show_progress(batch.num_rows)
-                count += batch.num_rows
-                row_count += batch.num_rows
-                # Start a new transaction
-                if transaction_size > 0 and count >= transaction_size:
-                    count = 0
-                    if (suppress_errors):
-                        self.__check_for_error(frame, arrow_schema, writer, metadata)
-                    writer.close()
-                    writer, metadata = self.__arrow_writer(frame, arrow_schema, column_mapping, suppress_errors, row_filter, on_duplicate_keys)
+                self.create_xgt_schemas(result, append, force, easy_edges)
+                writer, metadata = self.__arrow_writer(frame, arrow_schema, column_mapping, suppress_errors, row_filter, on_duplicate_keys)
+                count = 0
+                bytes_transferred = 0
+                row_count = 0
+                for batch in reader:
+                    bytes_transferred += sum(column.nbytes for column in batch)
+                    # Process arrow batches
+                    writer.write(batch)
+                    progress_bar.show_progress(batch.num_rows)
+                    count += batch.num_rows
+                    row_count += batch.num_rows
+                    # Start a new transaction
+                    if transaction_size > 0 and count >= transaction_size:
+                        count = 0
+                        if (suppress_errors):
+                            self.__check_for_error(frame, arrow_schema, writer, metadata)
+                        writer.close()
+                        writer, metadata = self.__arrow_writer(frame, arrow_schema, column_mapping, suppress_errors, row_filter, on_duplicate_keys)
 
-            if (suppress_errors):
-                self.__check_for_error(frame, arrow_schema, writer, metadata)
-            writer.close()
-            
-            return row_count, bytes_transferred
+                if (suppress_errors):
+                    self.__check_for_error(frame, arrow_schema, writer, metadata)
+                writer.close()
+
+                return row_count, bytes_transferred
+        except arrow_odbc.error.Error as e:
+            if "too large to be written" in str(e):
+                raise RuntimeError(
+                    f"{e}\nHint: Try casting oversized columns with CAST(column AS VARCHAR(n)) "
+                    "or changing the schema of the table to use a fixed size VARCHAR(n). "
+                    "Variable text width columns sometimes report incorrect maximum sizes from drivers. "
+                ) from e
+            raise
 
     def __validate_column_mapping(self, column_mapping):
         error_msg = ('The data type of "column_mapping" is incorrect. '

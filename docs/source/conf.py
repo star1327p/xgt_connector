@@ -42,7 +42,7 @@ copyright = '2022-2025, Trovares, Inc.'
 author = 'rocketgraph.com'
 
 # The full version, including alpha/beta/rc tags
-release = '2.6.4'
+release = '2.6.5'
 
 # -- General configuration ---------------------------------------------------
 
