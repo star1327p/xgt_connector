@@ -17,4 +17,4 @@
 #
 #===----------------------------------------------------------------------===#
 
-python -m pip install -e git+https://github.com/trovares/trovares_connector.git#egg=xgt_connector
+python -m pip install -e git+https://github.com/rocketgraphai/xgt_connector.git#egg=xgt_connector

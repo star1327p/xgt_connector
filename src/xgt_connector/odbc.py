@@ -453,7 +453,7 @@ class ODBCConnector(object):
         ----------
         tables : Iterable
             List of requested tables names.
-            May be a tuple specify a mapping to xGT types. See documentation: :ref:`mapping-sql-label` or `Web Docs <https://trovares.github.io/trovares_connector/odbc/index.html#mapping-sql-tables-to-graphs>`_.
+            May be a tuple specify a mapping to xGT types. See documentation: :ref:`mapping-sql-label` or `Web Docs <https://rocketgraphai.github.io/xgt_connector/odbc/index.html#mapping-sql-tables-to-graphs>`_.
         append : boolean
             Set to true when the xGT frames are already created and holding data
             that should be appended to.
@@ -533,7 +533,7 @@ class ODBCConnector(object):
         query : string
             SQL query to execute and insert into xGT. Syntax depends on the SQL syntax of the database you are connecting to.
         mapping :
-            May be a tuple specify a mapping to xGT types. See documentation: :ref:`mapping-sql-label` or `Web Docs <https://trovares.github.io/trovares_connector/odbc/index.html#mapping-sql-tables-to-graphs>`_.
+            May be a tuple specify a mapping to xGT types. See documentation: :ref:`mapping-sql-label` or `Web Docs <https://rocketgraphai.github.io/xgt_connector/odbc/index.html#mapping-sql-tables-to-graphs>`_.
         append : boolean
             Set to true when the xGT frames are already created and holding data
             that should be appended to.

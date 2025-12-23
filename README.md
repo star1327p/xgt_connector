@@ -1,9 +1,9 @@
 # xgt_connector Package
 
-[![CI](https://github.com/trovares/trovares_connector/actions/workflows/pytest.yml/badge.svg)](https://github.com/trovares/trovares_connector/actions/workflows/pytest.yml)
+[![CI](https://github.com/rocketgraphai/xgt_connector/actions/workflows/pytest.yml/badge.svg)](https://github.com/rocketgraphai/xgt_connector/actions/workflows/pytest.yml)
 [![Available on Pypi](https://img.shields.io/pypi/v/xgt_connector)](https://pypi.python.org/pypi/xgt_connector)
 [![Pypi Versions](https://img.shields.io/pypi/pyversions/xgt_connector)](https://pypi.python.org/pypi/xgt_connector)
-[![License](https://img.shields.io/github/license/trovares/trovares_connector)](https://github.com/trovares/trovares_connector/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/rocketgraphai/xgt_connector)](https://github.com/rocketgraphai/xgt_connector/blob/main/LICENSE)
 <!-- [![Twitter Follow](https://img.shields.io/twitter/follow/TrovaresxGT)](https://twitter.com/TrovaresxGT) -->
 
 This Python package is for connecting the Rocketgraph xGT graph analytics engine to other applications.
@@ -11,7 +11,7 @@ Rocketgraph xGT can [significantly speedup Neo4j queries](https://rocketgraph.co
 
 The default connector provided is for Neo4j or AuraDB.
 The package also provides an optional ODBC connector for connecting to databases or applications that support ODBC.
-Information about the ODBC connector can be found [in the documentation](https://trovares.github.io/trovares_connector/odbc). 
+Information about the ODBC connector can be found [in the documentation](https://rocketgraphai.github.io/xgt_connector/odbc). 
 
 <table>
   <tr>
@@ -20,11 +20,11 @@ Information about the ODBC connector can be found [in the documentation](https:/
   </tr>
   <tr>
     <td><b>Documentation:</b></td>
-    <td><a href="https://trovares.github.io/trovares_connector/">trovares.github.io/trovares_connector</a></td>
+    <td><a href="https://rocketgraphai.github.io/xgt_connector/">rocketgraphai.github.io/xgt_connector</a></td>
   </tr>
   <tr>
     <td><b>General Help:</b></td>
-    <td><a href="https://github.com/trovares/trovares_connector/discussions">github.com/trovares/trovares_connector/discussions</a></td>
+    <td><a href="https://github.com/rocketgraphai/xgt_connector/discussions">github.com/rocketgraphai/xgt_connector/discussions</a></td>
   </tr>
 </table>
 
@@ -48,7 +48,7 @@ If you want to use the ODBC connector, you can install the optional dependencies
 python -m pip install 'xgt_connector[odbc]'
 ```
 
-If you don't have Rocketgraph xGT, you can install and run the [Developer version](https://hub.docker.com/r/trovares/xgt) from Docker:
+If you don't have Rocketgraph xGT, you can install and run the [Developer version](https://hub.docker.com/r/rocketgraphai/xgt) from Docker:
 
 ```bash
 docker pull rocketgraph/xgt
@@ -107,5 +107,5 @@ The available methods are:
 
 Some examples can be found here:
 
-  - [Python examples](https://github.com/trovares/trovares_connector/tree/main/examples)
-  - [Jupyter notebooks](https://github.com/trovares/trovares_connector/tree/main/jupyter)
+  - [Python examples](https://github.com/rocketgraphai/xgt_connector/tree/main/examples)
+  - [Jupyter notebooks](https://github.com/rocketgraphai/xgt_connector/tree/main/jupyter)

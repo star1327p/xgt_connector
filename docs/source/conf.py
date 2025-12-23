@@ -129,7 +129,7 @@ html_theme_options = {
   "icon_links": [
     {
       "name": "GitHub",
-      "url": "https://github.com/trovares/trovares_connector",
+      "url": "https://github.com/rocketgraphai/xgt_connector",
       "icon": "fa-brands fa-github",
     },
     {
@@ -147,8 +147,8 @@ html_theme_options = {
 
 html_context = {
   # "github_url": "https://github.com", # or your GitHub Enterprise site
-  "github_user": "trovares",
-  "github_repo": "trovares_connector",
+  "github_user": "rocketgraphai",
+  "github_repo": "xgt_connector",
   "github_version": "main",
   "doc_path": "docs/source",
 }
